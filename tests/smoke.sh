@@ -10,7 +10,7 @@
 set -euo pipefail
 
 BASE="https://api.wpengineapi.com/v1"
-UA="ai-code-skill/wpe-labs:smoke-test"
+UA="wpe-labs-skills/smoke-test"
 ERRORS=0
 
 pass() { echo "  ok  $1"; }

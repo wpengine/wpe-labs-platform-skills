@@ -50,7 +50,7 @@ for skill_dir in "$ROOT/skills"/*/; do
   # User-Agent coverage: every curl call must have the matching header.
   # Match both standalone `curl -` and variable-assignment `$(curl -` forms.
   CURL_COUNT=$(grep -cE '(^\s*curl -|\$\(curl -)' "$skill_file" || true)
-  UA_COUNT=$(grep -c "User-Agent: ai-code-skill/wpe-labs:" "$skill_file" || true)
+  UA_COUNT=$(grep -c "User-Agent: wpe-labs-skills/" "$skill_file" || true)
 
   if [ "$CURL_COUNT" -eq 0 ]; then
     fail "$skill_name — no curl calls found (skill has no examples?)"
@@ -60,9 +60,9 @@ for skill_dir in "$ROOT/skills"/*/; do
     fail "$skill_name — $CURL_COUNT curl call(s) but $UA_COUNT User-Agent header(s)"
   fi
 
-  # User-Agent value uses the short skill name (strip wpe-labs: prefix from dir name)
+  # User-Agent value: wpe-labs-skills/{short-name}
   short_name="${skill_name#wpe-labs:}"
-  expected_ua="ai-code-skill/wpe-labs:${short_name}"
+  expected_ua="wpe-labs-skills/${short_name}"
   if grep -q "User-Agent: ${expected_ua}" "$skill_file"; then
     pass "$skill_name — User-Agent value correct"
   else

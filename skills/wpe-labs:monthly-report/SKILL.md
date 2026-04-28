@@ -49,7 +49,7 @@ Convert the user's requested period to API date params. The API supports max 31-
 
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:monthly-report" \
+  -H "User-Agent: wpe-labs-skills/monthly-report" \
   "https://api.wpengineapi.com/v1/accounts?limit=100" | \
   jq -r '.results[] | "\(.id)\t\(.name)"'
 ```
@@ -69,22 +69,22 @@ LAST_DATE="2025-03-31"
 
 # Usage summary for the period
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:monthly-report" \
+  -H "User-Agent: wpe-labs-skills/monthly-report" \
   "https://api.wpengineapi.com/v1/accounts/$ACCOUNT_ID/usage/summary?first_date=$FIRST_DATE&last_date=$LAST_DATE"
 
 # Plan limits
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:monthly-report" \
+  -H "User-Agent: wpe-labs-skills/monthly-report" \
   "https://api.wpengineapi.com/v1/accounts/$ACCOUNT_ID/limits"
 
 # Environment breakdown
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:monthly-report" \
+  -H "User-Agent: wpe-labs-skills/monthly-report" \
   "https://api.wpengineapi.com/v1/accounts/$ACCOUNT_ID/usage/insights?first_date=$FIRST_DATE&last_date=$LAST_DATE"
 
 # Site count
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:monthly-report" \
+  -H "User-Agent: wpe-labs-skills/monthly-report" \
   "https://api.wpengineapi.com/v1/sites?account_id=$ACCOUNT_ID&limit=1" | \
   jq '.count'
 ```
@@ -231,7 +231,7 @@ Structure the final Markdown output as follows:
 
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" -X POST \
-  -H "User-Agent: ai-code-skill/wpe-labs:monthly-report" \
+  -H "User-Agent: wpe-labs-skills/monthly-report" \
   "https://api.wpengineapi.com/v1/accounts/$ACCOUNT_ID/usage/refresh_disk_usage"
 ```
 

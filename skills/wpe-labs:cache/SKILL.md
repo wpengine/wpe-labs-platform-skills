@@ -27,7 +27,7 @@ Or pass inline: `-u "your-api-username:your-api-password"`
 INSTALL_ID="your-install-uuid"
 
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:cache" \
+  -H "User-Agent: wpe-labs-skills/cache" \
   -H "Content-Type: application/json" \
   -X POST "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/purge_cache" \
   -d '{"type": "all"}' | jq '.'
@@ -41,7 +41,7 @@ If you only have a site name, resolve to install_id:
 
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:cache" \
+  -H "User-Agent: wpe-labs-skills/cache" \
   "https://api.wpengineapi.com/v1/installs" | \
   jq -r '.results[] | select(.name | test("mysite")) | "\(.id)\t\(.name)\t\(.environment)"'
 ```
@@ -70,7 +70,7 @@ INSTALL_ID="your-install-uuid"
 CACHE_TYPE="all"  # object | page | cdn | all
 
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:cache" \
+  -H "User-Agent: wpe-labs-skills/cache" \
   -H "Content-Type: application/json" \
   -X POST "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/purge_cache" \
   -d "{\"type\": \"$CACHE_TYPE\"}"
@@ -88,7 +88,7 @@ Common after deploying a change that affects all environments:
 for INSTALL_ID in "$PROD_ID" "$STAGING_ID"; do
   echo "Purging cache for install: $INSTALL_ID"
   curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-    -H "User-Agent: ai-code-skill/wpe-labs:cache" \
+    -H "User-Agent: wpe-labs-skills/cache" \
     -H "Content-Type: application/json" \
     -X POST "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/purge_cache" \
     -d '{"type": "all"}'

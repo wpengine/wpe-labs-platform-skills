@@ -25,7 +25,7 @@ Or pass inline: `-u "your-api-username:your-api-password"`
 
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:installs" \
+  -H "User-Agent: wpe-labs-skills/installs" \
   "https://api.wpengineapi.com/v1/sites" | \
   jq '[.results[] | {id, name, account_id}]'
 ```
@@ -34,7 +34,7 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:installs" \
+  -H "User-Agent: wpe-labs-skills/installs" \
   "https://api.wpengineapi.com/v1/installs" | \
   jq '[.results[] | {id, name, environment, cname, php_version, site_id}]'
 ```
@@ -46,13 +46,13 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 ```bash
 # All sites
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:installs" \
+  -H "User-Agent: wpe-labs-skills/installs" \
   "https://api.wpengineapi.com/v1/sites" | \
   jq -r '.results[] | "\(.id)\t\(.name)\t\(.account_id)"'
 
 # Filter by account
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:installs" \
+  -H "User-Agent: wpe-labs-skills/installs" \
   "https://api.wpengineapi.com/v1/sites?account_id=$ACCOUNT_ID" | \
   jq -r '.results[] | "\(.id)\t\(.name)"'
 ```
@@ -67,7 +67,7 @@ If `count > 100`, paginate with `?limit=100&offset=100`.
 SITE_ID="your-site-uuid"
 
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:installs" \
+  -H "User-Agent: wpe-labs-skills/installs" \
   "https://api.wpengineapi.com/v1/installs?site_id=$SITE_ID" | \
   jq '[.results[] | {id, name, environment, cname, ip, php_version, wpe_version}]'
 ```
@@ -80,7 +80,7 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 INSTALL_ID="your-install-uuid"
 
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:installs" \
+  -H "User-Agent: wpe-labs-skills/installs" \
   "https://api.wpengineapi.com/v1/installs/$INSTALL_ID" | \
   jq '{id, name, environment, cname, ip, php_version, wpe_version, account_id, site_id}'
 ```
@@ -92,7 +92,7 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 ```bash
 # 1. Create the site
 SITE=$(curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:installs" \
+  -H "User-Agent: wpe-labs-skills/installs" \
   -H "Content-Type: application/json" \
   -X POST "https://api.wpengineapi.com/v1/sites" \
   -d "{\"name\": \"my-new-site\", \"account_id\": \"$ACCOUNT_ID\"}")
@@ -101,7 +101,7 @@ SITE_ID=$(echo "$SITE" | jq -r '.id')
 
 # 2. Create the production install on that site
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:installs" \
+  -H "User-Agent: wpe-labs-skills/installs" \
   -H "Content-Type: application/json" \
   -X POST "https://api.wpengineapi.com/v1/installs" \
   -d "{
@@ -123,13 +123,13 @@ SOURCE_INSTALL_ID="prod-install-uuid"
 DEST_INSTALL_ID="staging-install-uuid"
 
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:installs" \
+  -H "User-Agent: wpe-labs-skills/installs" \
   -H "Content-Type: application/json" \
   -X POST "https://api.wpengineapi.com/v1/install_copy" \
   -d "{
-    \"source_install_id\": \"$SOURCE_INSTALL_ID\",
-    \"destination_install_id\": \"$DEST_INSTALL_ID\",
-    \"options\": {
+    \"source_environment_id\": \"$SOURCE_INSTALL_ID\",
+    \"destination_environment_id\": \"$DEST_INSTALL_ID\",
+    \"custom_options\": {
       \"include_files\": true,
       \"include_db\": true
     },
@@ -143,9 +143,9 @@ Returns 202 Accepted. The copy runs asynchronously — notify the user when emai
 
 ```bash
 -d "{
-  \"source_install_id\": \"$SOURCE_INSTALL_ID\",
-  \"destination_install_id\": \"$DEST_INSTALL_ID\",
-  \"options\": {
+  \"source_environment_id\": \"$SOURCE_INSTALL_ID\",
+  \"destination_environment_id\": \"$DEST_INSTALL_ID\",
+  \"custom_options\": {
     \"include_files\": false,
     \"include_db\": true,
     \"db_tables\": [\"wp_posts\", \"wp_postmeta\", \"wp_options\"]

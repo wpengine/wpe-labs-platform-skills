@@ -27,7 +27,7 @@ Or pass inline: `-u "your-api-username:your-api-password"`
 INSTALL_ID="your-install-uuid"
 
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:backups" \
+  -H "User-Agent: wpe-labs-skills/backups" \
   -H "Content-Type: application/json" \
   -X POST "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/backups" \
   -d '{
@@ -42,7 +42,7 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 BACKUP_ID="your-backup-uuid"
 
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:backups" \
+  -H "User-Agent: wpe-labs-skills/backups" \
   "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/backups/$BACKUP_ID" | \
   jq '{id, status, description, created_at}'
 ```
@@ -55,7 +55,7 @@ If you only have a site name, resolve to install_id first:
 
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:backups" \
+  -H "User-Agent: wpe-labs-skills/backups" \
   "https://api.wpengineapi.com/v1/installs" | \
   jq -r '.results[] | select(.name | test("mysite")) | "\(.id)\t\(.name)\t\(.environment)"'
 ```
@@ -68,7 +68,7 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 INSTALL_ID="your-install-uuid"
 
 BACKUP=$(curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:backups" \
+  -H "User-Agent: wpe-labs-skills/backups" \
   -H "Content-Type: application/json" \
   -X POST "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/backups" \
   -d "{
@@ -91,7 +91,7 @@ Typical completion time: 2–10 minutes depending on install size.
 ```bash
 while true; do
   STATUS=$(curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-    -H "User-Agent: ai-code-skill/wpe-labs:backups" \
+    -H "User-Agent: wpe-labs-skills/backups" \
     "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/backups/$BACKUP_ID" | \
     jq -r '.status')
   echo "Status: $STATUS"
@@ -106,7 +106,7 @@ done
 
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:backups" \
+  -H "User-Agent: wpe-labs-skills/backups" \
   "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/backups/$BACKUP_ID" | \
   jq '{id, status, description, created_at}'
 ```

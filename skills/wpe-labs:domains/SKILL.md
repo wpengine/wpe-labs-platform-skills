@@ -27,7 +27,7 @@ Or pass inline: `-u "your-api-username:your-api-password"`
 INSTALL_ID="your-install-uuid"
 
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:domains" \
+  -H "User-Agent: wpe-labs-skills/domains" \
   "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/domains" | \
   jq '[.results[] | {id, name, primary, redirect_to, type}]'
 ```
@@ -38,7 +38,7 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 DOMAIN_ID="your-domain-uuid"
 
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:domains" \
+  -H "User-Agent: wpe-labs-skills/domains" \
   "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/domains/$DOMAIN_ID/ssl_certificate" | \
   jq '{status, expiry_date, issuer}'
 ```
@@ -49,7 +49,7 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:domains" \
+  -H "User-Agent: wpe-labs-skills/domains" \
   "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/domains" | \
   jq -r '.results[] | "\(.id)\t\(.name)\t\(if .redirect_to then "redirect→"+.redirect_to else "primary" end)"'
 ```
@@ -59,20 +59,25 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 **Step 2: Add a domain**
 
 ```bash
-# Add a primary domain
-curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:domains" \
+# Add a primary domain — capture the returned ID for use in redirects
+TARGET=$(curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
+  -H "User-Agent: wpe-labs-skills/domains" \
   -H "Content-Type: application/json" \
   -X POST "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/domains" \
-  -d '{"name": "www.example.com"}'
+  -d '{"name": "www.example.com"}')
+
+TARGET_DOMAIN_ID=$(echo "$TARGET" | jq -r '.id')
 
 # Add a redirect (e.g. naked domain → www)
+# redirect_to requires the target domain's UUID, not its name
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:domains" \
+  -H "User-Agent: wpe-labs-skills/domains" \
   -H "Content-Type: application/json" \
   -X POST "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/domains" \
-  -d '{"name": "example.com", "redirect_to": "www.example.com"}'
+  -d "{\"name\": \"example.com\", \"redirect_to\": \"$TARGET_DOMAIN_ID\"}"
 ```
+
+Note: for the single-domain endpoint, `redirect_to` takes the **domain UUID** (not the domain name). Use the bulk endpoint (`/domains/bulk`) when you want to specify redirects by name.
 
 ---
 
@@ -82,7 +87,7 @@ Useful for migrations with many redirects.
 
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:domains" \
+  -H "User-Agent: wpe-labs-skills/domains" \
   -H "Content-Type: application/json" \
   -X POST "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/domains/bulk" \
   -d '{
@@ -101,14 +106,14 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 ```bash
 # Submit a status check (returns report_id)
 REPORT=$(curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:domains" \
+  -H "User-Agent: wpe-labs-skills/domains" \
   -X POST "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/domains/$DOMAIN_ID/check_status")
 
 REPORT_ID=$(echo "$REPORT" | jq -r '.id')
 
 # Retrieve the status report
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:domains" \
+  -H "User-Agent: wpe-labs-skills/domains" \
   "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/domains/check_status/$REPORT_ID" | \
   jq '{status, checks}'
 ```
@@ -121,7 +126,7 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:domains" \
+  -H "User-Agent: wpe-labs-skills/domains" \
   "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/ssl_certificates" | \
   jq '[.results[] | {id, status, expiry_date, domains}]'
 ```
@@ -130,23 +135,26 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:domains" \
+  -H "User-Agent: wpe-labs-skills/domains" \
   -X POST "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/domains/$DOMAIN_ID/ssl_certificate"
 ```
 
 **Import a third-party SSL certificate:**
 
+The API expects Base64-encoded PEM content for both fields.
+
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:domains" \
+  -H "User-Agent: wpe-labs-skills/domains" \
   -H "Content-Type: application/json" \
   -X POST "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/ssl_certificates/third_party" \
   -d "{
-    \"certificate\": \"$(cat cert.pem | sed 's/$/\\n/' | tr -d '\n')\",
-    \"private_key\": \"$(cat key.pem | sed 's/$/\\n/' | tr -d '\n')\",
-    \"ca_bundle\": \"$(cat bundle.pem | sed 's/$/\\n/' | tr -d '\n')\"
+    \"certificate\": \"$(base64 -i cert.pem)\",
+    \"private_key\": \"$(base64 -i key.pem)\"
   }"
 ```
+
+On Linux, use `base64 cert.pem` (no `-i` flag). Only `certificate` and `private_key` are accepted — there is no `ca_bundle` field; include any intermediate certificates in the `certificate` chain.
 
 ---
 
@@ -154,7 +162,7 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:domains" \
+  -H "User-Agent: wpe-labs-skills/domains" \
   -X DELETE "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/domains/$DOMAIN_ID"
 ```
 </workflow>

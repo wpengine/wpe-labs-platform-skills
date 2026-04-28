@@ -27,7 +27,7 @@ Or pass inline: `-u "your-api-username:your-api-password"`
 ACCOUNT_ID="your-account-uuid"
 
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:users" \
+  -H "User-Agent: wpe-labs-skills/users" \
   "https://api.wpengineapi.com/v1/accounts/$ACCOUNT_ID/account_users" | \
   jq '[.results[] | {id, email: .user.email, first_name: .user.first_name, last_name: .user.last_name, roles}]'
 ```
@@ -40,7 +40,7 @@ If you don't have it:
 
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:users" \
+  -H "User-Agent: wpe-labs-skills/users" \
   "https://api.wpengineapi.com/v1/accounts" | \
   jq -r '.results[] | "\(.id)\t\(.name)"'
 ```
@@ -51,7 +51,7 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:users" \
+  -H "User-Agent: wpe-labs-skills/users" \
   "https://api.wpengineapi.com/v1/accounts/$ACCOUNT_ID/account_users" | \
   jq -r '.results[] | "\(.user.email)\t\(.roles | join(", "))"'
 ```
@@ -64,7 +64,7 @@ If `count > 100`, paginate with `?limit=100&offset=100`.
 
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:users" \
+  -H "User-Agent: wpe-labs-skills/users" \
   -H "Content-Type: application/json" \
   -X POST "https://api.wpengineapi.com/v1/accounts/$ACCOUNT_ID/account_users" \
   -d '{
@@ -72,17 +72,18 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
       "account_id": "'"$ACCOUNT_ID"'",
       "email": "newuser@example.com",
       "first_name": "Jane",
-      "last_name": "Smith"
-    },
-    "roles": ["full"]
-  }' | jq '{id, roles}'
+      "last_name": "Smith",
+      "roles": "full"
+    }
+  }' | jq '{id}'
 ```
 
-**Available roles:**
-- `owner` — Full control including billing and account deletion
-- `full` — All access except billing and account deletion
-- `partial` — Limited access (install-level permissions configured separately)
-- `billing` — Billing management only
+**Available roles** (pass as a string, not an array):
+- `"owner"` — Full control including billing and account deletion
+- `"full"` — All access except billing and account deletion
+- `"full,billing"` — Full access plus billing management
+- `"partial"` — Limited access (install-level permissions, set via `install_ids`)
+- `"partial,billing"` — Partial access plus billing management
 
 ---
 
@@ -92,10 +93,10 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 USER_ID="your-user-uuid"
 
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:users" \
+  -H "User-Agent: wpe-labs-skills/users" \
   -H "Content-Type: application/json" \
   -X PATCH "https://api.wpengineapi.com/v1/accounts/$ACCOUNT_ID/account_users/$USER_ID" \
-  -d '{"roles": ["partial"]}' | jq '{id, roles}'
+  -d '{"roles": "partial"}' | jq '.'
 ```
 
 ---
@@ -104,7 +105,7 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:users" \
+  -H "User-Agent: wpe-labs-skills/users" \
   -X DELETE "https://api.wpengineapi.com/v1/accounts/$ACCOUNT_ID/account_users/$USER_ID"
 ```
 
@@ -117,14 +118,14 @@ Returns 204 No Content on success.
 ```bash
 # Get all account IDs first
 ACCOUNTS=$(curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-  -H "User-Agent: ai-code-skill/wpe-labs:users" \
+  -H "User-Agent: wpe-labs-skills/users" \
   "https://api.wpengineapi.com/v1/accounts" | jq -r '.results[] | .id')
 
 # For each account, list users
 for ACCOUNT_ID in $ACCOUNTS; do
   echo "=== Account: $ACCOUNT_ID ==="
   curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
-    -H "User-Agent: ai-code-skill/wpe-labs:users" \
+    -H "User-Agent: wpe-labs-skills/users" \
     "https://api.wpengineapi.com/v1/accounts/$ACCOUNT_ID/account_users" | \
     jq -r '.results[] | "\(.user.email)\t\(.roles | join(", "))"'
 done
