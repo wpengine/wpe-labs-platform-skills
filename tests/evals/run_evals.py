@@ -51,14 +51,27 @@ def load_cases(skill_name: str) -> list[dict]:
     return mod.CASES
 
 
+def build_context() -> str:
+    """Build optional context block from environment variables when real IDs are available."""
+    lines = []
+    if os.environ.get("WPE_ACCOUNT_ID"):
+        lines.append(f"Account ID: {os.environ['WPE_ACCOUNT_ID']}")
+    if os.environ.get("WPE_INSTALL_ID"):
+        lines.append(f"Install ID: {os.environ['WPE_INSTALL_ID']}")
+    if not lines:
+        return ""
+    return "\n<context>\nUse these real WP Engine object IDs in your response:\n" + "\n".join(lines) + "\n</context>\n"
+
+
 def run_skill(client: anthropic.Anthropic, skill_md: str, prompt: str) -> str:
     """Run the skill with the given user prompt and return the assistant's response."""
+    context = build_context()
     system = f"""You are Claude Code running the following skill. Follow the skill's workflow exactly.
 
 <skill>
 {skill_md}
 </skill>
-
+{context}
 Do not actually execute curl commands. Instead, describe precisely which API calls you would make, in what order, with what parameters, and what the final output to the user would look like. Be specific and complete."""
 
     user = prompt if prompt else "Run the skill with default settings."
