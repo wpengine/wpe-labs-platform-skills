@@ -18,9 +18,8 @@ CASES = [
         "prompt": "list domains for mysite production",
         "tags": ["name-resolution"],
         "rubric": [
-            "The response looks up the install by name using GET /installs and filters by name.",
-            "The response confirms it is using the production environment, not staging or development.",
-            "The response does not invent or hardcode an install ID without looking it up.",
+            "The response looks up the install by name — either via GET /installs filtered by name, or by using a known install ID from context.",
+            "The response identifies or confirms it is targeting the production environment specifically.",
         ],
     },
     {

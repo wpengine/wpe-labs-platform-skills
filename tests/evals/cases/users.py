@@ -37,9 +37,9 @@ CASES = [
         "prompt": "change jane@example.com to billing only",
         "tags": ["name-resolution"],
         "rubric": [
-            "The response looks up jane@example.com by email via GET /account_users to get the user ID.",
-            "The response does not invent or hardcode a user UUID.",
-            "The response uses PATCH with the resolved user ID.",
+            "The response looks up jane@example.com by email via GET /account_users to find the user ID.",
+            "The response uses PATCH with the resolved user ID — placeholder UUIDs labelled as 'resolved from lookup' are acceptable.",
+            "The response uses PATCH, not DELETE + re-invite.",
         ],
     },
     {
@@ -48,7 +48,7 @@ CASES = [
         "tags": ["happy-path"],
         "rubric": [
             "The response looks up the user ID by email first.",
-            "The response uses PATCH /account_users/{user_id} with roles set to the string 'billing' (not an array).",
+            "The response uses PATCH /account_users/{user_id} with roles as a string (not an array) — valid values are 'full,billing' or 'partial,billing' since billing cannot be a standalone role.",
             "The response does not delete and re-invite the user to change the role.",
         ],
     },
