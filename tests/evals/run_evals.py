@@ -84,10 +84,10 @@ def judge_criterion(client: anthropic.Anthropic, response: str, criterion: str) 
 {criterion}
 </criterion>
 
-Does the response satisfy this criterion? Answer with a JSON object:
-{{"passed": true/false, "reasoning": "one sentence explaining why"}}
-
-Output only valid JSON, nothing else."""
+Does the response satisfy this criterion? Reply with a raw JSON object — no markdown, no code fences, no explanation outside the JSON:
+{{"passed": true, "reasoning": "one sentence"}}
+or
+{{"passed": false, "reasoning": "one sentence"}}"""
 
     result = client.messages.create(
         model=JUDGE_MODEL,
@@ -95,7 +95,12 @@ Output only valid JSON, nothing else."""
         messages=[{"role": "user", "content": prompt}],
     )
     try:
-        data = json.loads(result.content[0].text.strip())
+        raw = result.content[0].text.strip()
+        # Strip markdown code fence if present (```json ... ``` or ``` ... ```)
+        if raw.startswith("```"):
+            raw = raw.split("\n", 1)[-1]  # drop opening fence line
+            raw = raw.rsplit("```", 1)[0]  # drop closing fence
+        data = json.loads(raw.strip())
         return data["passed"], data["reasoning"]
     except (json.JSONDecodeError, KeyError):
         return False, f"Judge returned unparseable output: {result.content[0].text[:100]}"
