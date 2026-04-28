@@ -1,0 +1,20 @@
+name: Smoke tests
+
+on:
+  # Run manually from the Actions tab
+  workflow_dispatch:
+  # Run on a schedule to catch API drift (Sundays at 9am UTC)
+  schedule:
+    - cron: "0 9 * * 0"
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    environment: testing   # optional: use a GitHub Environment to scope secrets
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run API smoke tests
+        env:
+          WPE_USERNAME: ${{ secrets.WPE_USERNAME }}
+          WPE_PASSWORD: ${{ secrets.WPE_PASSWORD }}
+        run: bash tests/smoke.sh

@@ -125,6 +125,65 @@ while IFS= read -r line; do
   fi
 done < "$ROOT/install.sh"
 
+# ── Secret hygiene ────────────────────────────────────────────────────────────
+
+echo ""
+echo "Secret hygiene"
+echo "--------------"
+
+# .gitignore must exist
+if [ ! -f "$ROOT/.gitignore" ]; then
+  fail ".gitignore is missing"
+else
+  pass ".gitignore exists"
+
+  # .env must be gitignored
+  if grep -q '^\s*\.env\s*$' "$ROOT/.gitignore"; then
+    pass ".env is gitignored"
+  else
+    fail ".env is NOT in .gitignore — credentials could be committed"
+  fi
+
+  # .envrc must be gitignored
+  if grep -q '^\s*\.envrc\s*$' "$ROOT/.gitignore"; then
+    pass ".envrc is gitignored"
+  else
+    fail ".envrc is NOT in .gitignore"
+  fi
+fi
+
+# .env.example must exist (documents required vars without leaking values)
+if [ -f "$ROOT/.env.example" ]; then
+  pass ".env.example exists"
+else
+  fail ".env.example is missing — contributors won't know what vars to set"
+fi
+
+# .env must not be committed (check git if inside a repo)
+if git -C "$ROOT" rev-parse --git-dir >/dev/null 2>&1; then
+  if git -C "$ROOT" ls-files --error-unmatch .env >/dev/null 2>&1; then
+    fail ".env is tracked by git — credentials may be committed"
+  else
+    pass ".env is not tracked by git"
+  fi
+fi
+
+# No raw credential patterns in committed files.
+# Checks for Anthropic key prefix (sk-ant-api0) which is distinct enough to
+# never appear in docs/examples. WPE credentials have no detectable prefix so
+# rely on .env gitignore + GitHub secret scanning for those.
+if git -C "$ROOT" rev-parse --git-dir >/dev/null 2>&1; then
+  ANT_KEY_PATTERN="sk-ant""-api0"
+  CRED_HITS=$(git -C "$ROOT" grep -l \
+    -e "$ANT_KEY_PATTERN" \
+    -- ':!.env.example' ':!tests/lint.sh' 2>/dev/null || true)
+  if [ -z "$CRED_HITS" ]; then
+    pass "no hardcoded Anthropic API keys found in tracked files"
+  else
+    fail "Anthropic API key found hardcoded in: $CRED_HITS"
+  fi
+fi
+
 # ── Result ─────────────────────────────────────────────────────────────────────
 
 echo ""
