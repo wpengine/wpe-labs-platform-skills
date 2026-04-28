@@ -2,8 +2,18 @@
 set -e
 
 BASE_URL="https://raw.githubusercontent.com/wpengine/labs-usage-skill/main"
-SKILLS_DIR="$HOME/.claude/skills/wpe-labs:account-usage"
+SKILLS_DIR="$HOME/.claude/skills"
 COMMANDS_DIR="$HOME/.claude/commands"
+
+SKILLS=(
+  "wpe-labs:account-usage"
+  "wpe-labs:installs"
+  "wpe-labs:domains"
+  "wpe-labs:backups"
+  "wpe-labs:users"
+  "wpe-labs:cache"
+  "wpe-labs:monthly-report"
+)
 
 # Check dependencies
 for cmd in curl jq; do
@@ -14,15 +24,20 @@ for cmd in curl jq; do
   fi
 done
 
-echo "Installing wpe-labs:account-usage..."
+mkdir -p "$COMMANDS_DIR"
 
-mkdir -p "$SKILLS_DIR" "$COMMANDS_DIR"
+echo "Installing WP Engine Labs skills..."
+echo ""
 
-curl -fsSL "$BASE_URL/skills/wpe-labs:account-usage/SKILL.md" -o "$SKILLS_DIR/SKILL.md"
-curl -fsSL "$BASE_URL/commands/wpe-labs:account-usage.md"     -o "$COMMANDS_DIR/wpe-labs:account-usage.md"
+for SKILL in "${SKILLS[@]}"; do
+  mkdir -p "$SKILLS_DIR/$SKILL"
+  curl -fsSL "$BASE_URL/skills/$SKILL/SKILL.md"   -o "$SKILLS_DIR/$SKILL/SKILL.md"
+  curl -fsSL "$BASE_URL/commands/$SKILL.md"        -o "$COMMANDS_DIR/$SKILL.md"
+  echo "  ✓ $SKILL"
+done
 
 echo ""
-echo "✓ Installed to ~/.claude/skills/wpe-labs:account-usage/"
+echo "Installed ${#SKILLS[@]} skills to ~/.claude/skills/"
 echo ""
 echo "Next: set your WP Engine API credentials"
 echo ""
@@ -31,4 +46,9 @@ echo "  export WPE_PASSWORD=\"your-api-password\""
 echo ""
 echo "Get them at: https://my.wpengine.com/api_access"
 echo ""
-echo "Then in Claude Code, run: /wpe-labs:account-usage"
+echo "Then in Claude Code, run any skill:"
+echo ""
+for SKILL in "${SKILLS[@]}"; do
+  echo "  /$SKILL"
+done
+echo ""

@@ -25,6 +25,7 @@ Or pass inline: `-u "your-api-username:your-api-password"`
 
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
+  -H "User-Agent: ai-code-skill/wpe-labs:account-usage" \
   "https://api.wpengineapi.com/v1/accounts" | \
   jq '[.results[] | {id, name}]'
 ```
@@ -35,6 +36,7 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 ACCOUNT_ID="your-account-uuid"
 
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
+  -H "User-Agent: ai-code-skill/wpe-labs:account-usage" \
   "https://api.wpengineapi.com/v1/accounts/$ACCOUNT_ID/usage/summary" | \
   jq '{
     visits:         ((.visit_count.sum          // "0") | tonumber),
@@ -51,6 +53,7 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
+  -H "User-Agent: ai-code-skill/wpe-labs:account-usage" \
   "https://api.wpengineapi.com/v1/accounts" | \
   jq -r '.results[] | "\(.id)\t\(.name)"'
 ```
@@ -66,10 +69,12 @@ Run both in parallel for each account ID:
 ```bash
 # Usage summary (default = last 30 days)
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
+  -H "User-Agent: ai-code-skill/wpe-labs:account-usage" \
   "https://api.wpengineapi.com/v1/accounts/$ACCOUNT_ID/usage/summary"
 
 # Plan limits
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
+  -H "User-Agent: ai-code-skill/wpe-labs:account-usage" \
   "https://api.wpengineapi.com/v1/accounts/$ACCOUNT_ID/limits"
 ```
 
@@ -77,6 +82,7 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
+  -H "User-Agent: ai-code-skill/wpe-labs:account-usage" \
   "https://api.wpengineapi.com/v1/accounts/$ACCOUNT_ID/usage/summary?first_date=2025-03-01&last_date=2025-03-31"
 ```
 
@@ -108,6 +114,7 @@ The insights endpoint breaks usage down by environment type:
 
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
+  -H "User-Agent: ai-code-skill/wpe-labs:account-usage" \
   "https://api.wpengineapi.com/v1/accounts/$ACCOUNT_ID/usage/insights" | \
   jq '{
     visits: {
@@ -176,6 +183,7 @@ For each account show:
 
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" -X POST \
+  -H "User-Agent: ai-code-skill/wpe-labs:account-usage" \
   "https://api.wpengineapi.com/v1/accounts/$ACCOUNT_ID/usage/refresh_disk_usage"
 ```
 
