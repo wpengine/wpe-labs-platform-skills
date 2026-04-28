@@ -8,7 +8,7 @@ CASES = [
         "prompt": "clear all cache for mysite production",
         "tags": ["happy-path"],
         "rubric": [
-            "The response looks up the install by name and confirms it is the production environment before purging.",
+            "The response identifies the target install — either by resolving the name via GET /installs, or by using a known install ID from context — and states which install it is purging.",
             "The response uses POST /installs/{id}/purge_cache with type set to 'all'.",
             "The response notes that CDN propagation may take 1–5 minutes.",
         ],

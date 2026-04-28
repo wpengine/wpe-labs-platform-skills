@@ -19,7 +19,7 @@ CASES = [
         "tags": ["name-resolution"],
         "rubric": [
             "The response looks up the install by name — either via GET /installs filtered by name, or by using a known install ID from context.",
-            "The response identifies or confirms it is targeting the production environment specifically.",
+            "The response does not use a staging or development install when production was explicitly requested.",
         ],
     },
     {
