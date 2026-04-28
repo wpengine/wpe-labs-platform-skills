@@ -27,8 +27,8 @@ CASES = [
         "prompt": "audit all users across all my accounts",
         "tags": ["workflow"],
         "rubric": [
-            "The response fetches all accounts first via GET /accounts.",
-            "The response fetches users for each account separately.",
+            "The response either calls GET /accounts to discover all accounts, or uses account IDs from context — it does not invent account IDs.",
+            "The response fetches users for each account separately via GET /account_users.",
             "The response presents a clear per-account breakdown of who has access and with what role.",
         ],
     },

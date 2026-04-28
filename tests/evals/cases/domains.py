@@ -18,7 +18,7 @@ CASES = [
         "prompt": "add www.example.com to mysite and redirect example.com to it",
         "tags": ["happy-path"],
         "rubric": [
-            "The response adds www.example.com as a primary domain.",
+            "The response adds www.example.com as a domain (primary status is set by the API, not the request body).",
             "The response adds example.com as a redirect pointing to www.example.com.",
             "The response makes two separate POST /domains calls (or one bulk call), not one.",
         ],
