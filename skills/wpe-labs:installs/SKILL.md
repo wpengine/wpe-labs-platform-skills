@@ -116,6 +116,8 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 
 **Step 5: Copy an install (e.g. production → staging)**
 
+> **Before copying:** install_copy overwrites the destination — it cannot be undone without a backup. For a single install, confirm the source and destination. For bulk operations (copying all sites), always list the affected site pairs and wait for explicit user confirmation before submitting any request.
+
 ```bash
 SOURCE_INSTALL_ID="prod-install-uuid"
 DEST_INSTALL_ID="staging-install-uuid"
