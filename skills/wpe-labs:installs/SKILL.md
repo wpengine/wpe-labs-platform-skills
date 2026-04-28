@@ -116,7 +116,14 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 
 **Step 5: Copy an install (e.g. production → staging)**
 
-> **Before copying:** install_copy overwrites the destination — it cannot be undone without a backup. For a single install, confirm the source and destination. For bulk operations (copying all sites), always list the affected site pairs and wait for explicit user confirmation before submitting any request.
+> ⚠️ **GUARD — confirm before copying.**
+> `install_copy` overwrites the destination install's files and/or database. This cannot be undone without a backup.
+>
+> Before submitting ANY copy request, you MUST:
+> 1. Resolve and show both install names and environments (e.g. "mysite production → mysite staging")
+> 2. State explicitly: *"This will overwrite [destination name] with content from [source name]. All existing data on [destination] will be replaced. Confirm?"*
+> 3. For bulk operations (multiple sites), list every source→destination pair and confirm the full list before submitting any request
+> 4. Wait for explicit confirmation — do NOT proceed on ambiguous input
 
 ```bash
 SOURCE_INSTALL_ID="prod-install-uuid"
@@ -153,6 +160,20 @@ Returns 202 Accepted. The copy runs asynchronously — notify the user when emai
 }"
 ```
 </workflow>
+
+<destructive_operations>
+> 🔴 **DELETE /sites and DELETE /installs are permanently destructive.**
+> Deleting a site or install removes all WordPress files, databases, and configuration. There is no undo.
+>
+> You MUST follow this sequence before executing either DELETE:
+> 1. Confirm the site/install name and ID by fetching it — never trust user-provided IDs alone
+> 2. Check whether a recent backup exists via `wpe-labs:backups`; if not, recommend creating one first
+> 3. State explicitly: *"This will PERMANENTLY DELETE [name] ([environment]). All files and database data will be destroyed and cannot be recovered. This is irreversible. Type 'DELETE [name]' to confirm."*
+> 4. Require the user to type the install name as confirmation — do NOT accept "yes" or "ok"
+> 5. Only then execute the DELETE
+
+If you are ever unsure whether the user intends deletion vs. some other action, ask for clarification before proceeding.
+</destructive_operations>
 
 <api_reference>
 **Base URL:** `https://api.wpengineapi.com/v1`

@@ -160,6 +160,14 @@ On Linux, use `base64 cert.pem` (no `-i` flag). Only `certificate` and `private_
 
 **Step 6: Remove a domain**
 
+> ⚠️ **GUARD — confirm before deleting.**
+> Removing a domain is immediate and irreversible. If it is the primary domain or has live DNS traffic pointing to it, removal will break the site for visitors.
+>
+> Before running DELETE, you MUST:
+> 1. Show the user the domain name and install name you are about to remove
+> 2. State explicitly: *"This will permanently remove [domain] from [install]. This cannot be undone. Confirm?"*
+> 3. Wait for explicit confirmation ("yes", "confirm", "do it") — do NOT proceed on ambiguous input
+
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
   -H "User-Agent: wpe-labs-skills/domains" \

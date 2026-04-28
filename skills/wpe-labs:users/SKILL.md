@@ -103,6 +103,14 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 
 **Step 5: Remove a user**
 
+> ⚠️ **GUARD — confirm before removing.**
+> Removing a user immediately revokes all their access. This cannot be undone without re-inviting them.
+>
+> Before running DELETE, you MUST:
+> 1. Look up and show the user's email address and current role
+> 2. State explicitly: *"This will permanently remove [email] ([role]) from [account]. They will lose all access immediately. Confirm?"*
+> 3. Wait for explicit confirmation ("yes", "confirm", "do it") — do NOT proceed on ambiguous input
+
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
   -H "User-Agent: wpe-labs-skills/users" \
