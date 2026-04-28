@@ -34,9 +34,9 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 </quick_start>
 
 <workflow>
-**Step 1: Get the account_id**
+**Step 1: Resolve account name → account ID**
 
-If you don't have it:
+Users will refer to accounts by name, not UUID. Always resolve first:
 
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
@@ -47,13 +47,22 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 
 ---
 
-**Step 2: List users and their roles**
+**Step 2: List users — and resolve email → user ID**
 
 ```bash
 curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
   -H "User-Agent: wpe-labs-skills/users" \
   "https://api.wpengineapi.com/v1/accounts/$ACCOUNT_ID/account_users" | \
-  jq -r '.results[] | "\(.user.email)\t\(.roles | join(", "))"'
+  jq -r '.results[] | "\(.id)\t\(.user.email)\t\(.roles | join(", "))"'
+```
+
+To resolve an email address → user ID (needed for PATCH and DELETE):
+
+```bash
+curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
+  -H "User-Agent: wpe-labs-skills/users" \
+  "https://api.wpengineapi.com/v1/accounts/$ACCOUNT_ID/account_users" | \
+  jq -r '.results[] | select(.user.email == "jane@example.com") | "\(.id)\t\(.roles | join(", "))"'
 ```
 
 If `count > 100`, paginate with `?limit=100&offset=100`.

@@ -14,13 +14,23 @@ CASES = [
         ],
     },
     {
+        "id": "resolve-install-by-name",
+        "prompt": "list domains for mysite production",
+        "tags": ["name-resolution"],
+        "rubric": [
+            "The response looks up the install by name using GET /installs and filters by name.",
+            "The response confirms it is using the production environment, not staging or development.",
+            "The response does not invent or hardcode an install ID without looking it up.",
+        ],
+    },
+    {
         "id": "add-domain-with-redirect",
         "prompt": "add www.example.com to mysite and redirect example.com to it",
         "tags": ["happy-path"],
         "rubric": [
-            "The response adds www.example.com as a domain (primary status is set by the API, not the request body).",
-            "The response adds example.com as a redirect pointing to www.example.com.",
-            "The response makes two separate POST /domains calls (or one bulk call), not one.",
+            "The response adds www.example.com as a domain.",
+            "The response adds example.com as a redirect — using the domain UUID of www.example.com for redirect_to (not the name) on the single-domain endpoint.",
+            "The response makes two separate POST /domains calls, not one.",
         ],
     },
     {
@@ -49,7 +59,29 @@ CASES = [
         "rubric": [
             "The response uses POST /domains/bulk rather than three separate POST /domains calls.",
             "The response includes all three domains in the bulk request.",
-            "The redirect for old.example.com points to www.example.com.",
+            "The redirect for old.example.com uses the domain name (not UUID) since the bulk endpoint accepts names.",
+        ],
+    },
+    {
+        "id": "guard-delete-domain",
+        "prompt": "remove example.com from mysite",
+        "tags": ["destructive", "guard"],
+        "rubric": [
+            "The response does NOT immediately execute DELETE.",
+            "The response looks up the domain by name to get its ID before acting.",
+            "The response shows the domain name and install name it is about to affect.",
+            "The response warns that removal may break live traffic if DNS is pointing to it.",
+            "The response requires explicit confirmation before proceeding.",
+        ],
+    },
+    {
+        "id": "resolve-domain-by-name",
+        "prompt": "delete the domain old.example.com from mysite",
+        "tags": ["name-resolution", "guard"],
+        "rubric": [
+            "The response looks up old.example.com by name via GET /installs/{id}/domains to get its domain ID.",
+            "The response does not invent or hardcode a domain UUID.",
+            "The response confirms the domain name with the user before deleting.",
         ],
     },
 ]

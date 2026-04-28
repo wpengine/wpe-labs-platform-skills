@@ -45,6 +45,21 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 </quick_start>
 
 <workflow>
+**Step 0: Resolve install name → install ID**
+
+Users will refer to installs by name (e.g. "mysite production"), not by UUID. Always resolve the name first:
+
+```bash
+curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
+  -H "User-Agent: wpe-labs-skills/domains" \
+  "https://api.wpengineapi.com/v1/installs" | \
+  jq -r '.results[] | select(.name | test("mysite")) | "\(.id)\t\(.name)\t\(.environment)"'
+```
+
+If multiple installs match (e.g. production and staging), confirm which one with the user before proceeding.
+
+---
+
 **Step 1: List domains**
 
 ```bash
@@ -52,6 +67,15 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
   -H "User-Agent: wpe-labs-skills/domains" \
   "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/domains" | \
   jq -r '.results[] | "\(.id)\t\(.name)\t\(if .redirect_to then "redirect→"+.redirect_to else "primary" end)"'
+```
+
+To resolve a domain name → domain ID (needed for redirects and DELETE):
+
+```bash
+curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
+  -H "User-Agent: wpe-labs-skills/domains" \
+  "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/domains" | \
+  jq -r '.results[] | select(.name == "example.com") | .id'
 ```
 
 ---
