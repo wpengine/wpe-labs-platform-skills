@@ -70,11 +70,11 @@ CASES = [
     },
     {
         "id": "stale-storage-note",
-        "prompt": "",
+        "prompt": "generate the report — note that some accounts are showing 0 GB for file storage",
         "tags": ["edge-case"],
         "rubric": [
-            "If storage shows 0 GB or null, the response notes that storage data may be stale and offers to trigger a refresh.",
-            "The response does not silently show 0 GB as if it were the correct value.",
+            "The response does not display 0 GB as if it were the correct storage value.",
+            "The response flags the 0 GB storage as potentially stale and tells the user how to trigger a refresh.",
         ],
     },
 ]

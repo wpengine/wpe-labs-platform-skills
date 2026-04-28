@@ -199,7 +199,7 @@ Structure the final Markdown output as follows:
 - Round GB to 2 decimal places
 - Show utilization as integer percentage
 - Omit DB Storage limit column if the API returns no limit for it
-- If file storage shows 0 GB and the user hasn't asked to refresh, add a note: *(Storage data may be stale — ask to refresh if needed)*
+- **Always** check file and DB storage values before rendering. If either shows 0 GB or null, do not display 0 as if it were correct — instead show: *(Storage data may be stale — say "refresh storage" to trigger a recalculation)*
 - Sort accounts alphabetically in the summary table
 - Put flagged accounts (⚠️ or 🔴) first in the summary table
 </workflow>
