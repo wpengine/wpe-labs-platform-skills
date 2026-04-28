@@ -46,7 +46,7 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
   jq -r '.results[] | select(.name | test("mysite")) | "\(.id)\t\(.name)\t\(.environment)"'
 ```
 
-Always confirm you're targeting the right environment (production vs staging) before purging.
+A site name may match multiple installs (production, staging, development). Always clarify which environment to target before purging. If the user doesn't specify, default to **production** and state that assumption explicitly: *"Purging production cache for mysite — let me know if you meant staging."*
 
 ---
 

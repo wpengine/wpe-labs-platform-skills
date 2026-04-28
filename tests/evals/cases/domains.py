@@ -8,7 +8,7 @@ CASES = [
         "prompt": "list all domains for mysite",
         "tags": ["happy-path"],
         "rubric": [
-            "The response looks up the install by name to get the install ID.",
+            "The response identifies the correct install — either by looking up by name via GET /installs, or by using a known install ID from context.",
             "The response calls GET /installs/{id}/domains.",
             "The response shows domain names and whether each is a primary domain or redirect.",
         ],
