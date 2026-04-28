@@ -184,6 +184,8 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 <troubleshooting>
 **Domain add returns 422** — Domain name must be a valid FQDN. Don't include `https://` or trailing slashes.
 
+**`GET /ssl_certificates` returns 404** — The SSL certificates list endpoint is not available on all network types. Installs on WP Engine's modern network manage SSL differently; use the Portal for those. The endpoint works on legacy network installs.
+
 **SSL request fails** — Let's Encrypt provisioning is only available on the legacy network. If this returns an error, the install may be on the modern network; import a cert via the third-party endpoint instead, or provision SSL through the Portal.
 
 **DNS check shows not propagated** — Verify the domain's DNS A/CNAME record points to the install's `cname` or `ip` field (retrievable from `GET /installs/{id}`). Propagation can take up to 48 hours.

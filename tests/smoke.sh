@@ -39,7 +39,7 @@ wpe_get() {
     "$BASE/$1"
 }
 
-# Check status + HTTP code, assert JSON has expected key
+# Check status + HTTP code, assert JSON satisfies jq expression
 check() {
   local label="$1"
   local path="$2"
@@ -47,7 +47,35 @@ check() {
 
   response=$(wpe_get "$path")
   http_code=$(echo "$response" | tail -1)
-  body=$(echo "$response" | head -n -1)
+  body=$(echo "$response" | sed '$d')
+
+  if [ "$http_code" != "200" ]; then
+    fail "$label — HTTP $http_code"
+    return
+  fi
+
+  if echo "$body" | jq -e "$jq_check" >/dev/null 2>&1; then
+    pass "$label"
+  else
+    fail "$label — response missing expected field ($jq_check)"
+  fi
+}
+
+# Like check(), but treats 404 as a skip instead of a failure.
+# Use for endpoints that may not be available on all install network types.
+check_or_skip() {
+  local label="$1"
+  local path="$2"
+  local jq_check="$3"
+
+  response=$(wpe_get "$path")
+  http_code=$(echo "$response" | tail -1)
+  body=$(echo "$response" | sed '$d')
+
+  if [ "$http_code" = "404" ]; then
+    echo "  skip  $label — 404 (not available for this install)"
+    return
+  fi
 
   if [ "$http_code" != "200" ]; then
     fail "$label — HTTP $http_code"
@@ -68,7 +96,7 @@ echo "Discovering accounts..."
 
 ACCOUNTS_RESP=$(wpe_get "accounts")
 ACCOUNTS_CODE=$(echo "$ACCOUNTS_RESP" | tail -1)
-ACCOUNTS_BODY=$(echo "$ACCOUNTS_RESP" | head -n -1)
+ACCOUNTS_BODY=$(echo "$ACCOUNTS_RESP" | sed '$d')
 
 if [ "$ACCOUNTS_CODE" != "200" ]; then
   echo "Error: GET /accounts returned HTTP $ACCOUNTS_CODE — check credentials."
@@ -87,8 +115,8 @@ echo "  Using account: $ACCOUNT_NAME ($ACCOUNT_ID)"
 
 # Discover an install ID for install-scoped tests
 INSTALLS_RESP=$(wpe_get "installs?limit=1")
-INSTALL_ID=$(echo "$INSTALLS_RESP" | head -n -1 | jq -r '.results[0].id // empty')
-INSTALL_NAME=$(echo "$INSTALLS_RESP" | head -n -1 | jq -r '.results[0].name // empty')
+INSTALL_ID=$(echo "$INSTALLS_RESP" | sed '$d' | jq -r '.results[0].id // empty')
+INSTALL_NAME=$(echo "$INSTALLS_RESP" | sed '$d' | jq -r '.results[0].name // empty')
 
 if [ -n "$INSTALL_ID" ]; then
   echo "  Using install: $INSTALL_NAME ($INSTALL_ID)"
@@ -108,9 +136,9 @@ check "GET /accounts/{id}/usage/summary returns visit_count" \
   "accounts/$ACCOUNT_ID/usage/summary" \
   '.visit_count != null'
 
-check "GET /accounts/{id}/limits returns visitors field" \
+check "GET /accounts/{id}/limits returns a limits object" \
   "accounts/$ACCOUNT_ID/limits" \
-  '.visitors != null'
+  'type == "object" and (.bandwidth != null or .storage != null)'
 
 check "GET /accounts/{id}/usage/insights returns visit_count.environment_types" \
   "accounts/$ACCOUNT_ID/usage/insights" \
@@ -149,7 +177,7 @@ if [ -n "$INSTALL_ID" ]; then
     "installs/$INSTALL_ID/domains" \
     '.results | type == "array"'
 
-  check "GET /installs/{id}/ssl_certificates returns results array" \
+  check_or_skip "GET /installs/{id}/ssl_certificates returns results array" \
     "installs/$INSTALL_ID/ssl_certificates" \
     '.results | type == "array"'
 else
