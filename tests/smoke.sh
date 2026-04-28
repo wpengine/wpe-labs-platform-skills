@@ -112,6 +112,8 @@ if [ -z "$ACCOUNT_ID" ]; then
 fi
 
 echo "  Using account: $ACCOUNT_NAME ($ACCOUNT_ID)"
+echo "  → export WPE_ACCOUNT_ID=$ACCOUNT_ID"
+echo "  → export WPE_ACCOUNT_NAME=$ACCOUNT_NAME"
 
 # Discover an install ID for install-scoped tests
 INSTALLS_RESP=$(wpe_get "installs?limit=1")
@@ -120,6 +122,8 @@ INSTALL_NAME=$(echo "$INSTALLS_RESP" | sed '$d' | jq -r '.results[0].name // emp
 
 if [ -n "$INSTALL_ID" ]; then
   echo "  Using install: $INSTALL_NAME ($INSTALL_ID)"
+  echo "  → export WPE_INSTALL_ID=$INSTALL_ID"
+  echo "  → export WPE_INSTALL_NAME=$INSTALL_NAME"
 fi
 
 # ── wpe-labs:account-usage ────────────────────────────────────────────────────

@@ -52,15 +52,19 @@ def load_cases(skill_name: str) -> list[dict]:
 
 
 def build_context() -> str:
-    """Build optional context block from environment variables when real IDs are available."""
+    """Build optional context block from environment variables when real WPE objects are set."""
     lines = []
+    if os.environ.get("WPE_ACCOUNT_NAME"):
+        lines.append(f"Account name: {os.environ['WPE_ACCOUNT_NAME']}")
     if os.environ.get("WPE_ACCOUNT_ID"):
         lines.append(f"Account ID: {os.environ['WPE_ACCOUNT_ID']}")
+    if os.environ.get("WPE_INSTALL_NAME"):
+        lines.append(f"Install name: {os.environ['WPE_INSTALL_NAME']}")
     if os.environ.get("WPE_INSTALL_ID"):
         lines.append(f"Install ID: {os.environ['WPE_INSTALL_ID']}")
     if not lines:
         return ""
-    return "\n<context>\nUse these real WP Engine object IDs in your response:\n" + "\n".join(lines) + "\n</context>\n"
+    return "\n<context>\nUse these real WP Engine objects in your response:\n" + "\n".join(lines) + "\n</context>\n"
 
 
 def run_skill(client: anthropic.Anthropic, skill_md: str, prompt: str) -> str:
