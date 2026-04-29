@@ -15,7 +15,7 @@ CASES = [
     },
     {
         "id": "resolve-install-by-name",
-        "prompt": "list domains for mysite production",
+        "prompt": "list domains for {WPE_INSTALL_NAME} production",
         "tags": ["name-resolution"],
         "rubric": [
             "The response looks up the install by name — either via GET /installs filtered by name, or by using a known install ID from context.",

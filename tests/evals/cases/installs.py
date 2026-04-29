@@ -27,8 +27,8 @@ CASES = [
         "tags": ["async", "destructive"],
         "rubric": [
             "The response looks up install IDs by name rather than assuming or inventing them.",
-            "The response uses POST /install_copy with source_environment_id and destination_environment_id.",
-            "The response informs the user that the copy is asynchronous and completion will be confirmed by email.",
+            "The response uses POST /install_copy with the correct source and destination install IDs.",
+            "The response informs the user that the copy is asynchronous and will take time to complete.",
             "The response does not claim the copy is complete immediately.",
         ],
     },

@@ -69,6 +69,15 @@ def build_context() -> str:
     return "\n<context>\nUse these real WP Engine objects in your response:\n" + "\n".join(lines) + "\n</context>\n"
 
 
+def expand_prompt(prompt: str) -> str:
+    """Substitute {VAR} placeholders in prompts with real env var values."""
+    for key in ["WPE_ACCOUNT_NAME", "WPE_ACCOUNT_ID", "WPE_INSTALL_NAME", "WPE_INSTALL_ID"]:
+        val = os.environ.get(key, "")
+        if val:
+            prompt = prompt.replace(f"{{{key}}}", val)
+    return prompt
+
+
 async def run_skill(client: anthropic.AsyncAnthropic, skill_md: str, prompt: str) -> str:
     context = build_context()
     system = f"""You are Claude Code running the following skill. Follow the skill's workflow exactly.
@@ -77,7 +86,9 @@ async def run_skill(client: anthropic.AsyncAnthropic, skill_md: str, prompt: str
 {skill_md}
 </skill>
 {context}
-Do not actually execute curl commands. Instead, describe precisely which API calls you would make, in what order, with what parameters, and what the final output to the user would look like. Be specific and complete."""
+Do not actually execute curl commands. Instead, describe precisely which API calls you would make, in what order, with what parameters, and what the final output to the user would look like. Be specific and complete.
+
+For destructive operation guards, demonstrate the guard by stating the actual warning text and confirmation requirement — do not just say that a guard exists."""
 
     response = await client.messages.create(
         model=SKILL_MODEL,
@@ -120,7 +131,8 @@ Reply with a raw JSON array — no markdown, no code fences — with one object 
 
 async def run_case(client: anthropic.AsyncAnthropic, skill_name: str, skill_md: str, case: dict) -> dict:
     """Run a single eval case: one skill call + one batched judge call."""
-    response = await run_skill(client, skill_md, case["prompt"])
+    prompt = expand_prompt(case["prompt"])
+    response = await run_skill(client, skill_md, prompt)
     judgements = await judge_all(client, response, case["rubric"])
 
     criteria_results = []
