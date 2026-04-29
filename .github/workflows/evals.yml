@@ -1,0 +1,33 @@
+name: LLM evals
+
+on:
+  # Manual only — evals cost API credits and are not fast
+  workflow_dispatch:
+    inputs:
+      skill:
+        description: "Skill to eval (e.g. monthly-report). Leave blank for all."
+        required: false
+        default: ""
+      tags:
+        description: "Filter by tag (e.g. edge-case). Leave blank for all."
+        required: false
+        default: ""
+
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dependencies
+        run: pip install -r tests/evals/requirements.txt
+      - name: Run LLM evals
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          ARGS=""
+          [ -n "${{ inputs.skill }}" ] && ARGS="$ARGS --skill ${{ inputs.skill }}"
+          [ -n "${{ inputs.tags }}" ]  && ARGS="$ARGS --tags ${{ inputs.tags }}"
+          python tests/evals/run_evals.py $ARGS

@@ -1,0 +1,9 @@
+# Local credentials — never commit real values
+.env
+.envrc
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+eval.test.out
