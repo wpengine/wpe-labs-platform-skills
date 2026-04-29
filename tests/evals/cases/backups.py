@@ -8,7 +8,7 @@ CASES = [
         "prompt": "back up mysite production before deployment",
         "tags": ["happy-path"],
         "rubric": [
-            "The response identifies the correct install — either by looking up 'mysite' by name via GET /installs, or by using a known install ID from context.",
+            "The response identifies the correct install — either by looking up by name via GET /installs, or by using a known install ID from context — and names which install it is backing up.",
             "The response creates a backup with a meaningful description (e.g. includes 'pre-deployment' or today's date).",
             "The response captures and reports the backup ID.",
             "The response indicates it will poll or notify when the backup completes.",

@@ -202,6 +202,7 @@ Structure the final Markdown output as follows:
 - **Always** check file and DB storage values before rendering. If either shows 0 GB or null, do not display 0 as if it were correct — instead show: *(Storage data may be stale — say "refresh storage" to trigger a recalculation)*
 - Sort accounts alphabetically in the summary table
 - Put flagged accounts (⚠️ or 🔴) first in the summary table
+- **Always include the Environment Breakdown table** when the user requests it or when the insights endpoint was called — do not fetch the data and then omit it from the report
 </workflow>
 
 <api_reference>
