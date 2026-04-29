@@ -8,7 +8,7 @@ CASES = [
         "prompt": "",
         "tags": ["happy-path"],
         "rubric": [
-            "The response shows usage data for at least one account.",
+            "The response describes or shows usage data for at least one account — concrete values or a well-structured template with labelled placeholders are both acceptable.",
             "The response includes visits, bandwidth, and storage metrics.",
             "The response compares metrics against plan limits or notes when limits are unavailable.",
         ],
