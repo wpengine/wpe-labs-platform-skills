@@ -13,6 +13,7 @@ SKILLS=(
   "wpe-labs:users"
   "wpe-labs:cache"
   "wpe-labs:monthly-report"
+  "wpe-labs:offload"
 )
 
 # Check dependencies

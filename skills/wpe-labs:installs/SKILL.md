@@ -114,6 +114,50 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 
 ---
 
+**Step 4b: Rename a site**
+
+```bash
+curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
+  -H "User-Agent: wpe-labs-skills/installs" \
+  -H "Content-Type: application/json" \
+  -X PATCH "https://api.wpengineapi.com/v1/sites/$SITE_ID" \
+  -d '{"name": "new-site-name"}' | jq '{id, name}'
+```
+
+**Step 4c: Update an install**
+
+Move an install to a different site or change its environment:
+
+```bash
+curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
+  -H "User-Agent: wpe-labs-skills/installs" \
+  -H "Content-Type: application/json" \
+  -X PATCH "https://api.wpengineapi.com/v1/installs/$INSTALL_ID" \
+  -d '{"environment": "staging"}' | jq '{id, name, environment}'
+```
+
+Fields: `site_id` (uuid, move to different site), `environment` (`production`, `staging`, `development`, or `null`).
+
+**Step 4d: Per-install daily usage**
+
+Get granular daily usage metrics for a specific install:
+
+```bash
+curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
+  -H "User-Agent: wpe-labs-skills/installs" \
+  "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/usage?first_date=2025-03-01&last_date=2025-03-31" | jq .
+```
+
+Trigger a disk usage refresh for a specific install:
+
+```bash
+curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
+  -H "User-Agent: wpe-labs-skills/installs" \
+  -X POST "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/usage/refresh_disk_usage"
+```
+
+---
+
 **Step 5: Copy an install (e.g. production → staging)**
 
 > ⚠️ **GUARD — confirm before copying.**
@@ -196,6 +240,12 @@ If you are ever unsure whether the user intends deletion vs. some other action, 
 **Install fields:** `id`, `name`, `account_id`, `site_id`, `environment` (production/staging/development), `cname`, `ip`, `php_version`, `wpe_version`
 
 **install_copy options:** `include_files` (bool), `include_db` (bool), `db_tables` (string array for selective table copy)
+
+**PATCH /sites/{id} fields:** `name` (string)
+
+**PATCH /installs/{id} fields:** `site_id` (uuid), `environment` (production/staging/development/null)
+
+**GET /installs/{id}/usage params:** `first_date`, `last_date` (both required for custom range, max 13 months back)
 </api_reference>
 
 <troubleshooting>

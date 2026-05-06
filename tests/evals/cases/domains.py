@@ -62,6 +62,34 @@ CASES = [
         ],
     },
     {
+        "id": "update-domain-primary",
+        "prompt": "make www.example.com the primary domain for {WPE_INSTALL_NAME}",
+        "tags": ["happy-path"],
+        "rubric": [
+            "The response looks up www.example.com by name to get its domain ID.",
+            "The response uses PATCH /installs/{id}/domains/{domain_id} with primary set to true.",
+            "The response does not delete and re-add the domain to change its primary status.",
+        ],
+    },
+    {
+        "id": "enforce-https",
+        "prompt": "force HTTPS on all URLs for www.example.com on {WPE_INSTALL_NAME}",
+        "tags": ["happy-path"],
+        "rubric": [
+            "The response uses PATCH /installs/{id}/domains/{domain_id} with secure_all_urls set to true.",
+            "The response identifies the domain by name before patching.",
+        ],
+    },
+    {
+        "id": "remove-redirect",
+        "prompt": "remove the redirect from example.com on {WPE_INSTALL_NAME}",
+        "tags": ["happy-path"],
+        "rubric": [
+            "The response uses PATCH /installs/{id}/domains/{domain_id} with redirect_to set to 'nil'.",
+            "The response does not DELETE the domain to remove the redirect.",
+        ],
+    },
+    {
         "id": "guard-delete-domain",
         "prompt": "remove example.com from mysite",
         "tags": ["destructive", "guard"],
@@ -79,7 +107,7 @@ CASES = [
         "tags": ["name-resolution", "guard"],
         "rubric": [
             "The response looks up old.example.com by name via GET /installs/{id}/domains to get its domain ID.",
-            "The response does not invent or hardcode a domain UUID.",
+            "The response does not hardcode a UUID without first showing the lookup step — example UUIDs used for illustration after a described lookup are acceptable.",
             "The response confirms the domain name with the user before deleting.",
         ],
     },

@@ -49,4 +49,23 @@ CASES = [
             "The response explains that storage data is refreshed asynchronously.",
         ],
     },
+    {
+        "id": "single-account-detail",
+        "prompt": "show me the details for my account",
+        "tags": ["happy-path"],
+        "rubric": [
+            "The response calls GET /accounts/{id} for a specific account, not just GET /accounts.",
+            "The response identifies the account by name or uses the known account ID from context.",
+        ],
+    },
+    {
+        "id": "daily-granular-usage",
+        "prompt": "show me daily usage breakdown for March 2025",
+        "tags": ["date-range"],
+        "rubric": [
+            "The response uses GET /accounts/{id}/usage (not /usage/summary) to get daily granular data.",
+            "The response includes first_date and last_date parameters for March 2025.",
+            "The response explains that this returns per-environment daily metrics, not a rolled-up summary.",
+        ],
+    },
 ]

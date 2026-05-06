@@ -60,6 +60,14 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 
 If count > 100, paginate: add `?limit=100&offset=100`.
 
+**Get details for a single account:**
+
+```bash
+curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
+  -H "User-Agent: wpe-labs-skills/account-usage" \
+  "https://api.wpengineapi.com/v1/accounts/$ACCOUNT_ID" | jq .
+```
+
 ---
 
 **Step 2: Fetch usage summary + plan limits per account**
@@ -160,8 +168,10 @@ For each account show:
 | `GET /accounts/{id}/usage/summary` | 30-day usage rollup across all installs |
 | `GET /accounts/{id}/usage/insights` | Usage broken down by env type + site type |
 | `GET /accounts/{id}/limits` | Plan limits: visitors, storage (GB), bandwidth (GB) |
-| `GET /accounts/{id}/usage` | Per-environment daily metrics (paginated) |
-| `GET /installs/{id}/usage` | Daily metrics for a single install |
+| `GET /accounts/{id}` | Single account details |
+| `GET /accounts/{id}/usage` | Per-environment daily metrics (paginated, `first_date`/`last_date`, `limit`/`offset`) |
+| `GET /installs/{id}/usage` | Daily metrics for a single install (`first_date`/`last_date`) |
+| `POST /installs/{id}/usage/refresh_disk_usage` | Trigger per-install disk usage recalculation |
 
 **UsageMetricsRollup field semantics:**
 

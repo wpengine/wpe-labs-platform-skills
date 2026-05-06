@@ -182,7 +182,38 @@ On Linux, use `base64 cert.pem` (no `-i` flag). Only `certificate` and `private_
 
 ---
 
-**Step 6: Remove a domain**
+**Step 6: Update a domain**
+
+Update a domain's primary status, redirect target, or HTTPS enforcement:
+
+```bash
+# Set as primary domain
+curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
+  -H "User-Agent: wpe-labs-skills/domains" \
+  -H "Content-Type: application/json" \
+  -X PATCH "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/domains/$DOMAIN_ID" \
+  -d '{"primary": true}' | jq '{id, name, primary}'
+
+# Force HTTPS for all URLs
+curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
+  -H "User-Agent: wpe-labs-skills/domains" \
+  -H "Content-Type: application/json" \
+  -X PATCH "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/domains/$DOMAIN_ID" \
+  -d '{"secure_all_urls": true}' | jq '{id, name, secure_all_urls}'
+
+# Remove a redirect (set redirect_to to "nil")
+curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
+  -H "User-Agent: wpe-labs-skills/domains" \
+  -H "Content-Type: application/json" \
+  -X PATCH "https://api.wpengineapi.com/v1/installs/$INSTALL_ID/domains/$DOMAIN_ID" \
+  -d '{"redirect_to": "nil"}' | jq '{id, name, redirect_to}'
+```
+
+**PATCH fields:** `primary` (bool), `redirect_to` (domain UUID or `"nil"` to remove redirect), `secure_all_urls` (bool — force HTTPS).
+
+---
+
+**Step 7: Remove a domain**
 
 > ⚠️ **GUARD — confirm before deleting.**
 > Removing a domain is immediate and irreversible. If it is the primary domain or has live DNS traffic pointing to it, removal will break the site for visitors.
@@ -209,7 +240,7 @@ curl -s -u "$WPE_USERNAME:$WPE_PASSWORD" \
 | `POST /installs/{id}/domains` | Add a domain or redirect |
 | `POST /installs/{id}/domains/bulk` | Bulk-add up to 20 domains/redirects |
 | `GET /installs/{id}/domains/{domain_id}` | Get domain details |
-| `PATCH /installs/{id}/domains/{domain_id}` | Update domain |
+| `PATCH /installs/{id}/domains/{domain_id}` | Update domain (`primary`, `redirect_to`, `secure_all_urls`) |
 | `DELETE /installs/{id}/domains/{domain_id}` | Remove domain |
 | `POST /installs/{id}/domains/{domain_id}/check_status` | Submit DNS propagation check |
 | `GET /installs/{id}/domains/check_status/{report_id}` | Get propagation report |

@@ -76,7 +76,8 @@ To persist across sessions, add both lines to your `~/.zshrc` or `~/.bashrc`, th
 | [`/wpe-labs:cache`](#wpe-labscache) | Purge object, page, or CDN cache layers | 🟡 Write |
 | [`/wpe-labs:users`](#wpe-labsusers) | List, invite, update roles, and remove account users | 🟡 Write / 🔴 Destructive |
 | [`/wpe-labs:domains`](#wpe-labsdomains) | Manage domains, redirects, DNS checks, and SSL | 🟡 Write / 🔴 Destructive |
-| [`/wpe-labs:installs`](#wpe-labsinstalls) | List, create, and copy WordPress installations | 🟡 Write / 🔴 Destructive |
+| [`/wpe-labs:installs`](#wpe-labsinstalls) | List, create, update, and copy WordPress installations | 🟡 Write / 🔴 Destructive |
+| [`/wpe-labs:offload`](#wpe-labsoffload) | Manage LargeFS media offload configuration | 🟡 Write |
 
 **Risk levels:**
 - 🟢 **Read-only** — no changes are made to your account
@@ -100,7 +101,7 @@ Fetches bandwidth, visits, file storage, and database storage across all account
 /wpe-labs:account-usage show me production traffic only
 ```
 
-**What it returns:** visits (total and billable), bandwidth GB, file storage GB, DB storage GB — all vs plan limits. Supports custom date ranges up to 13 months back in 31-day windows.
+**What it returns:** visits (total and billable), bandwidth GB, file storage GB, DB storage GB — all vs plan limits. Supports custom date ranges up to 13 months back in 31-day windows. Can also return details for a single account or granular per-environment daily usage breakdowns.
 
 ---
 
@@ -196,7 +197,7 @@ Manages domains and SSL certificates for WordPress installations. Add primary do
 /wpe-labs:domains remove old.example.com from mysite
 ```
 
-**What it returns:** domain list with redirect relationships, DNS propagation status, SSL certificate status and expiry.
+**What it returns:** domain list with redirect relationships, DNS propagation status, SSL certificate status and expiry. Supports updating domains to change primary status, redirect targets, or enforce HTTPS.
 
 **Safeguards:**
 - Removing a domain: Claude will resolve the domain name to its ID, show which domain and install will be affected, warn that removal may break live traffic if DNS is still pointing to it, and require explicit confirmation
@@ -221,11 +222,30 @@ Lists, inspects, creates, and copies WordPress installations across environments
 /wpe-labs:installs copy only wp_posts and wp_options from production to staging
 ```
 
-**What it returns:** site and install details (name, environment, cname, IP, PHP version). Handles async install copy with email notification on completion.
+**What it returns:** site and install details (name, environment, cname, IP, PHP version). Handles async install copy with email notification on completion. Also supports renaming sites, updating installs, and retrieving per-install daily usage metrics.
 
 **Safeguards:**
 - **Copying environments:** overwrites the destination install's files and/or database. Claude will resolve both install names, show the source→destination pair, state that existing data on the destination will be replaced, and require explicit confirmation before submitting. For bulk operations (all sites), Claude will list every pair and confirm the full list before any request is sent.
 - **Deleting a site or install:** permanent — all files and database data are destroyed and cannot be recovered. Claude will verify the install exists, recommend creating a backup first, state the full consequences, and require you to type the install name (not just "yes") as confirmation.
+
+---
+
+### `/wpe-labs:offload`
+
+🟡 **Write** — reads and updates configuration; does not delete data
+
+Manages LargeFS media offload configuration for WordPress installations. LargeFS offloads WordPress media uploads to S3-compatible storage. Covers the full setup workflow: retrieving the S3 bucket validation file, reading current configuration, and creating or updating offload settings.
+
+```
+/wpe-labs:offload show offload config for mysite
+/wpe-labs:offload get the LargeFS validation file for mysite
+/wpe-labs:offload set up media offload for mysite
+/wpe-labs:offload update the offload configuration for mysite
+```
+
+**What it returns:** current LargeFS configuration or the S3 validation file contents. POST and PATCH operations return 202 Accepted — configuration is applied asynchronously.
+
+**Note:** Always fetch the current config before updating — the PATCH request requires the full config object, not just changed fields.
 
 ---
 
