@@ -88,6 +88,13 @@ for cmd_file in "$ROOT/commands"/*.md; do
     fi
   done
 
+  # Bash must be in allowed-tools — without it Claude cannot execute curl commands
+  if grep -q "^allowed-tools:.*Bash" "$cmd_file"; then
+    pass "$cmd_name — Bash in allowed-tools"
+  else
+    fail "$cmd_name — Bash missing from allowed-tools (skills will describe API calls but not execute them)"
+  fi
+
   # Referenced skill must exist
   skill_ref=$(grep 'allowed-tools:' "$cmd_file" | grep -o 'Skill([^)]*)' | sed 's/Skill(\(.*\))/\1/' || true)
   if [ -z "$skill_ref" ]; then
