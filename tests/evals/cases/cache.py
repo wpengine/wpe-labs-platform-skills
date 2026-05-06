@@ -36,7 +36,7 @@ CASES = [
         "prompt": "we just deployed to production and staging — clear cache on both",
         "tags": ["workflow"],
         "rubric": [
-            "The response purges cache for both production and staging installs.",
+            "The response purges cache for production and staging installs — using known IDs from context or by looking them up.",
             "The response uses separate POST /purge_cache calls for each install.",
             "The response uses type 'all' for a post-deployment scenario.",
         ],

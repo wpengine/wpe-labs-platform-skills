@@ -47,9 +47,36 @@ CASES = [
         "prompt": "copy production to staging for all sites",
         "tags": ["destructive", "guard"],
         "rubric": [
-            "The response lists all affected source→destination site pairs before submitting any requests.",
+            "The response describes fetching all sites to discover production→staging pairs before submitting any requests, or lists known pairs from context.",
             "The response asks for explicit confirmation before proceeding, not after.",
             "The response acknowledges this is a destructive operation that will overwrite staging data.",
+        ],
+    },
+    {
+        "id": "rename-site",
+        "prompt": "rename the site {WPE_INSTALL_NAME} to mysite-v2",
+        "tags": ["happy-path"],
+        "rubric": [
+            "The response uses PATCH /sites/{id} with a name field, not a different endpoint.",
+            "The response looks up the site ID before patching rather than hardcoding it.",
+        ],
+    },
+    {
+        "id": "update-install-environment",
+        "prompt": "move the {WPE_INSTALL_NAME} install to staging",
+        "tags": ["happy-path"],
+        "rubric": [
+            "The response uses PATCH /installs/{id} with environment set to 'staging'.",
+            "The response does not use install_copy to change the environment.",
+        ],
+    },
+    {
+        "id": "per-install-daily-usage",
+        "prompt": "show me daily usage for {WPE_INSTALL_NAME} for last month",
+        "tags": ["date-range"],
+        "rubric": [
+            "The response uses GET /installs/{id}/usage (not the account-level usage endpoint).",
+            "The response includes first_date and last_date parameters for the previous month.",
         ],
     },
     {
